@@ -57,16 +57,19 @@ def create_df(image_paths, labels):
 
 df = create_df(image_paths, labels)
 
-Happy = df.groupby("labels").get_group("happy")
+happy = df.groupby("labels").get_group("happy")
 Sad = df.groupby("labels").get_group("Sad")
 Angry = df.groupby("labels").get_group("Angry")
 Other = df.groupby("labels").get_group("Other")
 
+
 def plot_emotions(emotion):
+  
     fig, axes = plt.subplots(ncols = 5,nrows = 1, figsize=(20, 20))
     for i in range(0,5):
         index = random.sample(range(len(emotion)),1)
         index = int(''.join(map(str, index)))
+        
 
         filename = emotion.iloc[index]["image_paths"]
         label = emotion.iloc[index]["labels"]
@@ -76,6 +79,8 @@ def plot_emotions(emotion):
         for ax in axes:
             ax.set_xticks([])
             ax.set_yticks([])
+            
+        
     
 
     plt.show()
@@ -104,7 +109,7 @@ def predict_emotion(img, model):
     prediction = model.predict(img_array)
     predicted_class_index = np.argmax(prediction)
     acc = np.max(prediction)
-    class_indices = {'Angry': 0, 'Other': 1, 'Sad': 2, 'happy': 3}
+    class_indices = {'angry': 0, 'other': 1, 'sad': 2, 'happy': 3}
     class_labels = list(class_indices.keys())
     predicted_class_label = class_labels[predicted_class_index]
     #predictions = model.predict(img_array)
@@ -118,18 +123,18 @@ st.title('Pet Emotion Classifier')
 st.write("Upload an image of your pet to classify its emotion.")
 
 # File uploader allows user to add their own image
-uploaded_file = st.file_uploader("Choose an image...", type=["png", "jpg", "jpeg"])
-class_labels = ['Angry', 'Other', 'Sad', 'Happy']
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg"])
+class_labels = ['angry', 'other', 'sad', 'Happy']
 
 def show_similar_img(label):
-    if label == "Angry":
+    if label == "angry":
         plot_emotions(Angry)
-    elif label == "Other":
+    elif label == "other":
         plot_emotions(Other)
-    elif label == "Sad":
+    elif label == "sad":
         plot_emotions(Sad)
-    elif label == "Happy":
-        plot_emotions(Happy)
+    elif label == "happy":
+        plot_emotions(happy)
 
 if uploaded_file is not None:
     image = load_image(uploaded_file)
@@ -152,7 +157,7 @@ if uploaded_file is not None:
     if label == 'Other':
         st.write(f"With a probability of {acc}%, your pet appears to be neither angry, happy, or sad.")
     else:
-        st.write(f"With a probability of {acc}%, your pet appears to be {label}.")
+        st.write(f"With a probability of {acc}%, your pet appears to be {label}!")
     
     st.write(f"Other {label} pets look like this" )
     show_similar_img(label)
